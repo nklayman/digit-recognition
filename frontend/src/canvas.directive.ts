@@ -14,7 +14,7 @@ const mounted = (el: HTMLCanvasElement) => {
 
   ctx.lineJoin = 'round'
   ctx.lineCap = 'round'
-  ctx.lineWidth = 25
+  ctx.lineWidth = 15
 
   let prevPos = { offsetX: 0, offsetY: 0 }
   let line: any = []

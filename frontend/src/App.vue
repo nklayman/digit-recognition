@@ -24,6 +24,7 @@
 import { Network } from 'rust-neural-network'
 import { defineComponent, onMounted, ref } from 'vue'
 import canvas from './canvas.directive'
+import getBoundingBox from './getBoundingBox'
 
 export default defineComponent({
   name: 'App',
@@ -41,8 +42,23 @@ export default defineComponent({
      * This will be a 784 long array of floats between 0-1
      */
     const getData = () => {
+      if (!canvas.value) {
+        throw new Error('No canvas')
+      }
+      const { top, left, width, height } = getBoundingBox(canvas.value)
+
       ctx2?.clearRect(0, 0, canvas2.width, canvas2.height)
-      ctx2?.drawImage(canvas.value as HTMLCanvasElement, 0, 0, 28, 28)
+      ctx2?.drawImage(
+        canvas.value as HTMLCanvasElement,
+        left,
+        top,
+        width,
+        height,
+        0,
+        0,
+        28,
+        28
+      )
       const redValues: number[] = []
       ctx2?.getImageData(0, 0, 28, 28).data.forEach((val, i) => {
         if (i % 4 === 3) {
@@ -77,9 +93,10 @@ export default defineComponent({
       predictions.forEach((p: number, i: number) => {
         if (p >= predictions[ans]) {
           ans = i
-          confidence.value = p
+          confidence.value = p.toFixed(3)
         }
       })
+      console.log(predictions.map((n: number) => n.toFixed(3)))
       guess.value = ans
     }
 
