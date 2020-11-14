@@ -64,20 +64,25 @@ const mounted = (el: HTMLCanvasElement) => {
   canvas.addEventListener('mouseup', endPaintEvent)
   canvas.addEventListener('mouseleave', endPaintEvent)
   canvas.addEventListener('touchstart', e => {
-    const r = canvas.getBoundingClientRect()
+    e.preventDefault()
     const touch = e.touches[0]
-    const offsetX = touch.pageX - r.left
-    const offsetY = touch.pageY - r.top
-    isPainting = true
-    prevPos = { offsetX, offsetY }
+    const clientX = touch.clientX + canvas.offsetLeft * 2
+    const clientY = touch.clientY + canvas.offsetTop * 2
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX,
+      clientY
+    })
+    canvas.dispatchEvent(mouseEvent)
   })
   canvas.addEventListener(
     'touchmove',
     e => {
       const touch = e.touches[0]
+      const clientX = touch.clientX + canvas.offsetLeft * 2
+      const clientY = touch.clientY + canvas.offsetTop * 2
       const mouseEvent = new MouseEvent('mousemove', {
-        clientX: touch.clientX,
-        clientY: touch.clientY
+        clientX,
+        clientY
       })
       canvas.dispatchEvent(mouseEvent)
     },
