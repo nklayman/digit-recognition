@@ -1,0 +1,13 @@
+{
+  "name": "digit-recognition-trainer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "train": "node ./train.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "rust-neural-network": "link:../rust-neural-network/pkg"
+  }
+}
