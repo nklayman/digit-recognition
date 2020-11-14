@@ -3,16 +3,9 @@
     Draw below: <br />
     <canvas v-canvas ref="canvas" style="border: 2px solid black"></canvas
     ><br />
-    <button @click="loadModel" style="margin-right: 5px">Load Model</button>
-    <button
-      :disabled="!modelLoaded"
-      @click="makePrediction"
-      style="margin-right: 5px"
-    >
-      Guess
-    </button>
     <button @click="clear">Clear</button>
-    Guess is {{ guess }}, confidence is {{ confidence }}
+    <div v-if="!modelLoaded">Loading</div>
+    <div v-else>Guess is {{ guess }}, confidence is {{ confidence }}</div>
     <br />
     <br />
     <br />
@@ -36,6 +29,7 @@ export default defineComponent({
     // Used to scale down input
     const canvas2 = document.createElement('canvas')
     const ctx2 = canvas2.getContext('2d')
+    document.body.appendChild(canvas2)
 
     /**
      * Scales down image drawn on canvas, returns the red pixel values
@@ -59,13 +53,13 @@ export default defineComponent({
         28,
         28
       )
-      const redValues: number[] = []
+      const alphaValues: number[] = []
       ctx2?.getImageData(0, 0, 28, 28).data.forEach((val, i) => {
         if (i % 4 === 3) {
-          redValues.push(val / 255)
+          alphaValues.push(val / 255)
         }
       })
-      return redValues
+      return alphaValues
     }
 
     const modelLoaded = ref(false)
@@ -99,6 +93,14 @@ export default defineComponent({
       console.log(predictions.map((n: number) => n.toFixed(3)))
       guess.value = ans
     }
+    onMounted(() => {
+      loadModel()
+      canvas.value?.addEventListener('endPaint', () => {
+        if (modelLoaded.value) {
+          makePrediction()
+        }
+      })
+    })
 
     /**
      * Clears the canvas and guess/confidence
@@ -112,10 +114,8 @@ export default defineComponent({
     }
 
     return {
-      makePrediction,
       clear,
       canvas,
-      loadModel,
       modelLoaded,
       guess,
       confidence

@@ -12,14 +12,15 @@ const mounted = (el: HTMLCanvasElement) => {
   canvas.width = 280
   canvas.height = 280
 
-  ctx.lineJoin = 'round'
   ctx.lineCap = 'round'
-  ctx.lineWidth = 15
+  ctx.lineWidth = 10
+  ctx.shadowBlur = 5
+  ctx.shadowColor = 'rgb(0, 0, 0)'
 
   let prevPos = { offsetX: 0, offsetY: 0 }
   let line: any = []
   let isPainting = false
-  const USER_STROKE = 'red'
+  const USER_STROKE = 'black'
 
   const paint = (
     prevPosition: any,
@@ -42,10 +43,11 @@ const mounted = (el: HTMLCanvasElement) => {
     isPainting = true
     prevPos = { offsetX, offsetY }
   }
-  const endPaintEvent = () => {
+  const endPaintEvent = (e: MouseEvent | TouchEvent) => {
     if (isPainting) {
       isPainting = false
     }
+    e.target?.dispatchEvent(new Event('endPaint'))
   }
   const handleMouseMove = (e: MouseEvent) => {
     if (isPainting) {
