@@ -60,7 +60,7 @@ export default defineComponent({
      */
     const loadModel = async () => {
       const { Network } = await import("rust-neural-network");
-      const model = await (await fetch("/model.json")).text();
+      const model = await (await fetch("./model.json")).text();
       net = Network.from_model(model);
       modelLoaded.value = true;
     };
