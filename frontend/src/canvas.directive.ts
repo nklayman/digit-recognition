@@ -68,8 +68,9 @@ const mounted = (el: HTMLCanvasElement) => {
   canvas.addEventListener('touchstart', e => {
     e.preventDefault()
     const touch = e.touches[0]
-    const clientX = touch.clientX + canvas.offsetLeft * 2
-    const clientY = touch.clientY + canvas.offsetTop * 2
+    const r = canvas.getBoundingClientRect()
+    const clientX = touch.clientX + r.left * 2
+    const clientY = touch.clientY + r.top * 2
     const mouseEvent = new MouseEvent('mousedown', {
       clientX,
       clientY
@@ -80,8 +81,9 @@ const mounted = (el: HTMLCanvasElement) => {
     'touchmove',
     e => {
       const touch = e.touches[0]
-      const clientX = touch.clientX + canvas.offsetLeft * 2
-      const clientY = touch.clientY + canvas.offsetTop * 2
+      const r = canvas.getBoundingClientRect()
+      const clientX = touch.clientX + r.left * 2
+      const clientY = touch.clientY + r.top * 2
       const mouseEvent = new MouseEvent('mousemove', {
         clientX,
         clientY
