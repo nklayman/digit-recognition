@@ -197,7 +197,7 @@ impl Network {
 
         // Work backwards through 2nd-last layer, ignoring first (input) layer
         for layer in (0..(self.sizes.len() - 2)).rev() {
-            // Each neuron's delta is the sum of the next layer's activations multiplied be the weight connecting the neurons
+            // Delta is the next layer's delta multiplied be the weight connecting the neurons
             // and by sigmoid_prime to account for sigmoid activation
             delta = (self.weights[layer + 1].transpose() * &delta)
                 .component_mul(&zs[layer].map(|z| sigmoid_prime(z)));
