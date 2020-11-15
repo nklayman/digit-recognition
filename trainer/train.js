@@ -28,7 +28,7 @@ const test = fs
 
 const network = Network.new([784, 100, 50, 10])
 console.log('Training Network')
-network.train(train, 20, 10, 0.3)
+network.train(train, 20, 10, 0.3, test)
 
 console.log('Making Predictions')
 const predictions = network.predict(test.map(([input]) => input))

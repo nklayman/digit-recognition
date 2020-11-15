@@ -29,6 +29,7 @@ impl Network {
         iterations: usize,
         batch_size: usize,
         learn_rate: f64,
+        test_data_js: JsValue,
     ) -> Result<(), JsValue> {
         // Convert from JS array to vec of Matrices
         let data_vec: Vec<(Vec<f64>, Vec<f64>)> = data_js.into_serde().unwrap();
@@ -41,6 +42,24 @@ impl Network {
                 )
             })
             .collect();
+        let mut test_data: Option<Vec<(DMatrix<f64>, DMatrix<f64>)>> = None;
+        if let Some(test_data_vec) = test_data_js
+            .into_serde::<Option<Vec<(Vec<f64>, Vec<f64>)>>>()
+            .unwrap()
+        {
+            // let test_data_vec: Vec<(Vec<f64>, Vec<f64>)> = data_js.into_serde().unwrap();
+            test_data = Some(
+                test_data_vec
+                    .iter()
+                    .map(|(input, answer)| {
+                        (
+                            DMatrix::from_vec(input.len(), 1, input.clone()),
+                            DMatrix::from_vec(answer.len(), 1, answer.clone()),
+                        )
+                    })
+                    .collect(),
+            );
+        }
 
         // Ensure matching input dimensions
         for data in data.iter() {
@@ -108,6 +127,27 @@ impl Network {
                     .zip(&bias_errors)
                     .map(|(b, be)| b - &(learn_rate * be))
                     .collect();
+            }
+
+            // Evaluate model at each iteration if test data is provided
+            if let Some(ref test_data) = test_data {
+                let mut correct = 0;
+                for (input, answer) in test_data.iter() {
+                    let prediction = self.feedforward(input);
+                    let answer_vec: Vec<f64> = answer.iter().map(|a| *a).collect();
+                    let mut ans = 0;
+                    for (i, pred) in prediction.iter().enumerate() {
+                        if pred > &prediction[(ans, 0)] {
+                            ans = i
+                        }
+                    }
+                    if ans == answer_vec.iter().position(|n| n == &1.0).unwrap() {
+                        correct += 1
+                    }
+                }
+                web_sys::console::log_1(
+                    &format!("Iteration {} scored {} / {}", i, correct, test_data.len()).into(),
+                );
             }
         }
         Ok(())
